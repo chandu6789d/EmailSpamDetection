@@ -1,7 +1,12 @@
 import streamlit as st
+st.set_page_config(
+    page_title="Email Spam Detector",
+    page_icon="📧",
+    layout="centered"
+)
 import pickle
 import nltk
-import nltk
+
 
 try:
     nltk.data.find('tokenizers/punkt')
@@ -49,19 +54,54 @@ def transform_text(text):
     
             
     return " ".join(y)
-model = pickle.load(open("model2.pkl", "rb"))
-tfidf=pickle.load(open("vectorizer2.pkl", "rb"))
-st.title("Spam Detector")
+@st.cache_resource
+def load_models():
+    model = pickle.load(open("model2.pkl", "rb"))
+    tfidf = pickle.load(open("vectorizer2.pkl", "rb"))
+    return model, tfidf
 
-text = st.text_area("Enter Message")
+model, tfidf = load_models()
 
 
-if st.button("Predict"):
-    msg = transform_text(text)
-    tfidf_msg = tfidf.transform([msg])
-    result = model.predict(tfidf_msg)[0]
+st.title("📧 Email Spam Detector")
+st.markdown("Detect whether an email is **Spam** or **Not Spam** using Machine Learning.")
 
-    if result == 1:
-        st.error("Spam")
+st.divider()
+
+text = st.text_area(
+    "Enter Email Message",
+    height=200,
+    placeholder="Paste your email content here..."
+)
+
+if st.button("🔍 Analyze Email", use_container_width=True):
+
+    if text.strip() == "":
+        st.warning("Please enter an email message.")
     else:
-        st.success("Not Spam")
+
+        msg = transform_text(text)
+
+        vector_input = tfidf.transform([msg])
+        result = model.predict(vector_input)[0]
+        prob = model.predict_proba(vector_input)
+        confidence = max(prob[0]) * 100
+
+        st.divider()
+        st.info(f"Confidence Score: {confidence:.2f}%")
+
+        if result == 1:
+            st.error("🚨 Spam Email Detected")
+        else:
+            st.success("✅ Legitimate Email")
+
+
+with st.sidebar:
+    st.header("📌 About")
+    st.write("""
+    Email Spam Detection using:
+    - TF-IDF Vectorizer
+    - Multinomial Naive Bayes
+    - NLTK Preprocessing
+    - Streamlit Deployment
+    """)
