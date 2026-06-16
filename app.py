@@ -1,12 +1,22 @@
 import streamlit as st
 import pickle
 import nltk
+try:
+    nltk.data.find('tokenizers/punkt')
+except:
+    nltk.download('punkt')
+
+try:
+    nltk.data.find('corpora/stopwords')
+except:
+    nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 import string
 ps = PorterStemmer()
-nltk.download('punkt')
-nltk.download('stopwords')
+
+
+
 def transform_text(text):
     text = text.lower()
     text = nltk.word_tokenize(text)
