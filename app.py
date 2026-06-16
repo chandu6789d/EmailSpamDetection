@@ -96,12 +96,16 @@ if st.button("🔍 Analyze Email", use_container_width=True):
             st.success("✅ Legitimate Email")
 
 
-with st.sidebar:
-    st.header("📌 About")
+st.markdown("---")
+
+with st.expander("📌 About This Project"):
     st.write("""
-    Email Spam Detection using:
+    **Technologies Used**
+
     - TF-IDF Vectorizer
     - Multinomial Naive Bayes
-    - NLTK Preprocessing
-    - Streamlit Deployment
+    - NLTK Text Preprocessing
+    - Streamlit
+
+    This application predicts whether an email is Spam or Legitimate.
     """)
